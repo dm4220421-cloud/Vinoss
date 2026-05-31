@@ -15,7 +15,6 @@
             margin: 0;
             padding: 20px 0;
             box-sizing: border-box;
-            position: relative;
         }
         .card {
             background-color: white;
@@ -78,20 +77,6 @@
             border: 2px solid #ff4d6d;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.05);
         }
-        .music-control {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: white;
-            border: 2px solid #ffccd5;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #ff4d6d;
-            cursor: pointer;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
-        }
         .btn-back {
             background-color: #f7d6db;
             color: #ff4d6d;
@@ -123,11 +108,9 @@
 </head>
 <body>
 
-    <button class="music-control" id="globalMusicBtn" onclick="toggleMusic()">🎵 مۆسیقا: بێدەنگ</button>
-
     <div class="card" id="mainCard"></div>
 
-    <audio id="bgMusic" loop src="https://files.catbox.moe/k1x475.mp3"></audio>
+    <audio id="bgMusic" loop src="https://files.catbox.moe/w8f553.mp3"></audio>
 
     <script>
         let historyStack = [];
@@ -148,28 +131,13 @@
             }
         }
 
-        // لۆژیکی لێدانی مۆسیقا
+        // لێدانی گۆرانییەکە بێ هیچ لێدانێکی زیادە لەگەڵ یەکەم چوونە پێشەوە
         function startMusicAutomatically() {
             if (!isMusicPlaying) {
                 const music = document.getElementById('bgMusic');
                 music.play().then(() => {
                     isMusicPlaying = true;
-                    document.getElementById('globalMusicBtn').innerHTML = "🎵 مۆسیقا: کار دەکات";
-                }).catch(e => console.log("بۆ لێدانی یەکەمجار پێویستی بە دەستلێدان هەیە"));
-            }
-        }
-
-        function toggleMusic() {
-            const music = document.getElementById('bgMusic');
-            const btn = document.getElementById('globalMusicBtn');
-            if (isMusicPlaying) {
-                music.pause();
-                btn.innerHTML = "🎵 مۆسیقا: بێدەنگ";
-                isMusicPlaying = false;
-            } else {
-                music.play();
-                btn.innerHTML = "🎵 مۆسیقا: کار دەکات";
-                isMusicPlaying = true;
+                }).catch(e => console.log("سیستەمی مۆبایلەکە چاوەڕێی دەست لێدان دەکات..."));
             }
         }
 
@@ -191,7 +159,7 @@
         }
 
         function handleStep1(answer) {
-            startMusicAutomatically(); // هەر کە دەستی لێدا مۆسیقاکە دەستپێدەکات
+            startMusicAutomatically(); // لێدانی خۆکارانە لەگەڵ یەکەم کلیک
             let replyText = answer === 'ihmal' ? "جوانی، ئایا من کەمتەرخەمم یان تۆ؟ 🥺❤️" : "بۆچی؟ مەگەر من خراپەم ویستوە؟ 🥺💔";
             const html = `
                 <div class="fade-in">
@@ -247,7 +215,7 @@
                 <div class="fade-in">
                     <div class="title">ڕاستگۆیی ❤️</div>
                     <div class="heart-divider">✦ ✨ ✦</div>
-                    <h2>دڵنیایت لەوەی منت خۆش دەوێ؟ 🥺🌹</h2>
+                    <h2>دڵنیایت لەوەیمنت خۆش دەوێ؟ 🥺🌹</h2>
                     <div class="btn-group">
                         <button class="btn btn-main" onclick="handleStep3('love')">بەڵێ زۆرم خۆش دەوێییی 🥰</button>
                         <button class="btn btn-outline" onclick="handleStep3('changed')">یان گۆڕاوم... 🥀</button>
@@ -273,7 +241,7 @@
             renderStep(html);
         }
 
-        // هەوڵدان بۆ لێدانی مۆسیقا لەگەڵ تەواوبوونی بارکردنی لاپەڕەکە
+        // لەگەڵ هەر دەست لێدانێک لە شاشەکە، ئەگەر مۆسیقاکە دەستی پێ نەکردبێت دەکەوێتە کار
         window.addEventListener('click', startMusicAutomatically);
         showStep1();
     </script>
