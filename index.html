@@ -2,33 +2,248 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venus 💖</title>
     <style>
-        body { font-family: sans-serif; background-color: #fff0f3; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background-color: white; padding: 40px; border-radius: 24px; text-align: center; width: 90%; max-width: 450px; border: 2px solid #ffccd5; }
-        .btn { padding: 15px 30px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; background-color: #ff4d6d; color: white; font-size: 18px; margin-top: 20px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff0f3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(255, 77, 109, 0.15);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border: 2px solid #ffccd5;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .title {
+            color: #ff4d6d;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .heart-divider {
+            color: #ffb3c1;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #4a4a4a;
+            font-size: 20px;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            font-weight: 600;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+        .btn-main {
+            background-color: #ff4d6d;
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
+        }
+        .btn-outline {
+            background-color: #fff;
+            color: #ff4d6d;
+            border: 2px solid #ff4d6d;
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.05);
+        }
+        .btn-back {
+            background-color: #f7d6db;
+            color: #ff4d6d;
+            font-size: 14px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            margin-top: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:active {
+            transform: scale(1.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+            width: 100%;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dark-text {
+            color: #5c5c5c;
+            line-height: 1.8;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
 
-    <audio id="mySong" loop src="https://files.catbox.moe/w8f553.mp3"></audio>
-
     <div class="card" id="mainCard">
-        <div class="title">سڵاو ڤینۆس 💖</div>
-        <h2>بۆ بیستنی ئەم گۆرانییە تایبەتە و بینینی نامەکە، تکایە کلیک لەسەر ئەم دوگمەیە بکە:</h2>
-        <button class="btn" onclick="startExperience()">دەستپێکردن 🎶</button>
+        <!-- قۆناغی دەستپێکردن بۆ چالاککردنی دەنگ بە پێی یاسای کڕۆم -->
+        <div class="fade-in">
+            <div class="title">خوشکم فینۆس 💖</div>
+            <div class="heart-divider">✦ ✨ ✦</div>
+            <h2>بۆ خوێندنەوەی نامەکە و بیستنی گۆرانییەکە، تکایە لەسەر دوگمەی خوارەوە دەست پێ بکە:</h2>
+            <div class="btn-group">
+                <button class="btn btn-main" onclick="startExperience()">دەستپێکردن 🎶</button>
+            </div>
+        </div>
     </div>
 
+    <!-- گۆرانی چاوەڕوانی ئەحمەد خەلیل -->
+    <audio id="bgMusic" loop src="https://files.catbox.moe/w8f553.mp3"></audio>
+
     <script>
+        let historyStack = [];
+
+        function renderStep(htmlContent, saveToHistory = true) {
+            const card = document.getElementById('mainCard');
+            if (saveToHistory && card.innerHTML.trim() !== "") {
+                historyStack.push(card.innerHTML);
+            }
+            card.innerHTML = htmlContent;
+        }
+
+        function goBack() {
+            if (historyStack.length > 0) {
+                const previousContent = historyStack.pop();
+                document.getElementById('mainCard').innerHTML = previousContent;
+            }
+        }
+
+        // کاتێک کلیک لەسەر دەستپێکردن دەکات، مۆسیقاکە دەستپێدەکات و دەچێتە قۆناغی ١
         function startExperience() {
-            const music = document.getElementById('mySong');
-            music.play();
-            // لێرەدا دەچینە قۆناغی یەکەمی پرسیارەکان
-            document.getElementById('mainCard').innerHTML = `
-                <h2>دایم ئەمەوێ دەست پێشخەری بکەم هەواڵت بزانم بەڵام پاشت گەز ئەبمەوە. بۆچی؟ 🤔</h2>
-                <button class="btn" onclick="alert('تەواوی پرسیارەکان لێرە بەردەوام دەبن...')">ئهمالم ئەکەی 😔</button>
+            document.getElementById('bgMusic').play().catch(e => console.log("Music play error"));
+            showStep1();
+        }
+
+        // قۆناغی ١: پرسیاری یەکەم
+        function showStep1() {
+            const html = `
+                <div class="fade-in">
+                    <div class="title">ڤینۆس 💖</div>
+                    <div class="heart-divider">✦ ✨ ✦</div>
+                    <h2>دایم ئەمەوێ دەست پێشخەری بکەم هەواڵت بزانم بەڵام پاشت گەز ئەبمەوە. بۆچی؟ 🤔</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-main" onclick="handleStep1('ihmal')">ئهمالم ئەکەی 😔</button>
+                        <button class="btn btn-outline" onclick="handleStep1('bahana')">بەهانە ئەدۆزمەوە 🤷‍♂️</button>
+                    </div>
+                </div>
             `;
+            renderStep(html, false); // مێژووی سەرەتا خاوێن دەکەینەوە
+        }
+
+        function handleStep1(answer) {
+            let replyText = answer === 'ihmal' ? "جوانی، ئایا من کەمتەرخەمم یان تۆ؟ 🥺❤️" : "بۆچی؟ مەگەر من خراپەم ویستوە؟ 🥺💔";
+            const html = `
+                <div class="fade-in">
+                    <div class="title">نامەیەک لە دڵەوە 💬</div>
+                    <div class="heart-divider">✦ ✨ ✦</div>
+                    <h2 class="dark-text">${replyText}</h2>
+                    <div class="btn-group" style="margin-top: 20px;">
+                        <button class="btn btn-main" onclick="showStep2()">بۆچی تاخیر جوابت داوەتەوە؟ 💭</button>
+                    </div>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
+                </div>
+            `;
+            renderStep(html);
+        }
+
+        // قۆناغی ٢
+        function showStep2() {
+            const html = `
+                <div class="fade-in">
+                    <div class="title">هەستەکان ❄️</div>
+                    <div class="heart-divider">✦ ✨ ✦</div>
+                    <h2>بۆچی هەموو کات تاخیر جوابت داوەتەوەت بە شێوەیەکی سارد قسە ئەکەی؟ لەخۆوە ناڵێم هەست پێ ئەکەم... 😔💔</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-main" onclick="handleStep2('be_hast')">فینۆس بێ هەست 🧊</button>
+                        <button class="btn btn-outline" onclick="handleStep2('awindar')">یاخود ئەویندار 🔥</button>
+                    </div>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
+                </div>
+            `;
+            renderStep(html);
+        }
+
+        function handleStep2(answer) {
+            let replyText = answer === 'be_hast' ? "ئازار کاتێک قورس دەبێت کە دڵt پڕ بێت لە هەست و قسە، بەڵام بەرامبەرەکەت تەنها بە بێ‌باکی سەیرت بکات. هیوادارم هەمیشە دەنگت و دڵت لە لایەن ئەو کەسانەوە ببیسترێت کە قەدرت دەزانن. ✨" : "سەختترین شت بۆ ئەویندار ئەوەیە کە بە قووڵایی دڵ فیداکاری بکات، بەڵام لە بەرامبەردا تەنها ساردی و بێ‌مەیلی بچنێتەوە. 💔";
+            const html = `
+                <div class="fade-in">
+                    <div class="title">ڕاستییەکی تاڵ 🖤</div>
+                    <div class="heart-divider">✦ ✨ ✦</div>
+                    <h2 class="dark-text">${replyText}</h2>
+                    <div class="btn-group" style="margin-top: 25px;">
+                        <button class="btn btn-main" onclick="showStep3()">دوا پرسیار.. دڵنیایت؟ 🤔</button>
+                    </div>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
+                </div>
+            `;
+            renderStep(html);
+        }
+
+        // قۆناغی ٣
+        function showStep3() {
+            const html = `
+                <div class="fade-in">
+                    <div class="title">ڕاستگۆیی ❤️</div>
+                    <div class="heart-divider">✦ ✨ ✦</div>
+                    <h2>دڵنیایت لەوەی منت خۆش دەوێ؟ 🥺🌹</h2>
+                    <div class="btn-group">
+                        <button class="btn btn-main" onclick="handleStep3('love')">بەڵێ زۆرم خۆش دەوێییی 🥰</button>
+                        <button class="btn btn-outline" onclick="handleStep3('changed')">یان گۆڕاوم... 🥀</button>
+                    </div>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
+                </div>
+            `;
+            renderStep(html);
+        }
+
+        // کۆتایی
+        function handleStep3(answer) {
+            let replyText = answer === 'love' ? "خۆشەویستی ئەوەیە کاتێک ناوی دێت، دڵت بلەرزێت؛ کاتێکیش لەبەر چاوان ون دەبێت، تەواوی دنیا چۆڵ و بێدەنگ بێت. فینۆس گیان... ❤️✨" : "گۆڕانی من لەبەر بێوەفایی خۆم نەبوو، بەڵکو وەڵامێک بوو بۆ ئەو هەموو ساردی و بێ‌هەستییەی کە لە بەرامبەر دڵسۆزیمدا بینیم. 🥀💔";
+            
+            const html = `
+                <div class="fade-in">
+                    <div class="title">کۆتایی نامەکە ✉️</div>
+                    <div class="heart-divider">✦ 🎶 ✦</div>
+                    <h2 class="dark-text">${replyText}</h2>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
+                </div>
+            `;
+            renderStep(html);
         }
     </script>
+
 </body>
 </html>
