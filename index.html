@@ -14,6 +14,8 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px 0;
+            box-sizing: border-box;
+            position: relative;
         }
         .card {
             background-color: white;
@@ -21,15 +23,15 @@
             border-radius: 24px;
             box-shadow: 0 15px 35px rgba(255, 77, 109, 0.15);
             text-align: center;
-            max-width: 500px;
+            max-width: 450px;
             width: 90%;
             border: 2px solid #ffccd5;
-            position: relative;
-            min-height: 280px;
+            min-height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            box-sizing: border-box;
         }
         .title {
             color: #ff4d6d;
@@ -76,6 +78,20 @@
             border: 2px solid #ff4d6d;
             box-shadow: 0 5px 15px rgba(255, 77, 109, 0.05);
         }
+        .music-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border: 2px solid #ffccd5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #ff4d6d;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+        }
         .btn-back {
             background-color: #f7d6db;
             color: #ff4d6d;
@@ -86,10 +102,6 @@
             border: none;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        .btn-back:hover {
-            background-color: #ffccd5;
         }
         .btn:active {
             transform: scale(1.1);
@@ -104,7 +116,6 @@
         }
         .dark-text {
             color: #5c5c5c;
-            font-style: italic;
             line-height: 1.8;
             font-size: 18px;
         }
@@ -112,10 +123,15 @@
 </head>
 <body>
 
+    <button class="music-control" id="globalMusicBtn" onclick="toggleMusic()">🎵 مۆسیقا: بێدەنگ</button>
+
     <div class="card" id="mainCard"></div>
+
+    <audio id="bgMusic" loop src="https://files.catbox.moe/k1x475.mp3"></audio>
 
     <script>
         let historyStack = [];
+        let isMusicPlaying = false;
 
         function renderStep(htmlContent, saveToHistory = true) {
             const card = document.getElementById('mainCard');
@@ -132,7 +148,32 @@
             }
         }
 
-        // قۆناغی ١: دەستپێک و پرسیاری یەکەم
+        // لۆژیکی لێدانی مۆسیقا
+        function startMusicAutomatically() {
+            if (!isMusicPlaying) {
+                const music = document.getElementById('bgMusic');
+                music.play().then(() => {
+                    isMusicPlaying = true;
+                    document.getElementById('globalMusicBtn').innerHTML = "🎵 مۆسیقا: کار دەکات";
+                }).catch(e => console.log("بۆ لێدانی یەکەمجار پێویستی بە دەستلێدان هەیە"));
+            }
+        }
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const btn = document.getElementById('globalMusicBtn');
+            if (isMusicPlaying) {
+                music.pause();
+                btn.innerHTML = "🎵 مۆسیقا: بێدەنگ";
+                isMusicPlaying = false;
+            } else {
+                music.play();
+                btn.innerHTML = "🎵 مۆسیقا: کار دەکات";
+                isMusicPlaying = true;
+            }
+        }
+
+        // قۆناغی ١: دەستپێک
         function showStep1() {
             historyStack = [];
             const html = `
@@ -149,31 +190,26 @@
             renderStep(html, false);
         }
 
-        // وڵامی بەشەکانی قۆناغی ١
         function handleStep1(answer) {
-            let replyText = "";
-            if (answer === 'ihmal') {
-                replyText = "جوانی، ئایا من کەمتەرخەمم یان تۆ؟ 🥺❤️";
-            } else {
-                replyText = "بۆچی؟ مەگەر من خراپەم ویستوە؟ 🥺💔";
-            }
-
+            startMusicAutomatically(); // هەر کە دەستی لێدا مۆسیقاکە دەستپێدەکات
+            let replyText = answer === 'ihmal' ? "جوانی، ئایا من کەمتەرخەمم یان تۆ؟ 🥺❤️" : "بۆچی؟ مەگەر من خراپەم ویستوە؟ 🥺💔";
             const html = `
                 <div class="fade-in">
                     <div class="title">نامەیەک لە دڵەوە 💬</div>
                     <div class="heart-divider">✦ ✨ ✦</div>
-                    <h2 class="dark-text">${replyText}</h2>
+                    <h2>${replyText}</h2>
                     <div class="btn-group" style="margin-top: 20px;">
                         <button class="btn btn-main" onclick="showStep2()">بۆچی تاخیر جوابت داوەتەوە؟ 💭</button>
                     </div>
-                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە بۆ پرسیارەکە</button>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
                 </div>
             `;
             renderStep(html);
         }
 
-        // قۆناغی ٢: لاپەڕەی ساردی قسەکردن
+        // قۆناغی ٢
         function showStep2() {
+            startMusicAutomatically();
             const html = `
                 <div class="fade-in">
                     <div class="title">هەستەکان ❄️</div>
@@ -183,36 +219,29 @@
                         <button class="btn btn-main" onclick="handleStep2('be_hast')">فینۆس بێ هەست 🧊</button>
                         <button class="btn btn-outline" onclick="handleStep2('awindar')">یاخود ئەویندار 🔥</button>
                     </div>
-                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە بۆ نامەکە</button>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
                 </div>
             `;
             renderStep(html);
         }
 
-        // وڵامی بەشەکانی قۆناغی ٢
         function handleStep2(answer) {
-            let replyText = "";
-            if (answer === 'be_hast') {
-                replyText = "ئازار کاتێک قورس دەبێت کە دڵت پڕ بێت لە هەست و قسە، بەڵام بەرامبەرەکەت تەنها بە بێ‌باکی سەیرت بکات. هیوادارم هەمیشە دەنگت و دڵت لە لایەن ئەو کەسانەوە ببیسترێت کە قەدرت دەزانن. ✨";
-            } else {
-                replyText = "سەختترین شت بۆ ئەویندار ئەوەیە کە بە قووڵایی دڵ فیداکاری بکات، بەڵام لە بەرامبەردا تەنها ساردی و بێ‌مەیلی بچنێتەوە. 💔";
-            }
-
+            let replyText = answer === 'be_hast' ? "ئازار کاتێک قورس دەبێت کە دڵت پڕ بێت لە هەست و قسە، بەڵام بەرامبەرەکەت تەنها بە بێ‌باکی سەیرت بکات. هیوادارم هەمیشە دەنگت و دڵت لە لایەن ئەو کەسانەوە ببیسترێت کە قەدرت دەزانن. ✨" : "سەختترین شت بۆ ئەویندار ئەوەیە کە بە قووڵایی دڵ فیداکاری بکات، بەڵام لە بەرامبەردا تەنها ساردی و بێ‌مەیلی بچنێتەوە. 💔";
             const html = `
                 <div class="fade-in">
                     <div class="title">ڕاستییەکی تاڵ 🖤</div>
                     <div class="heart-divider">✦ ✨ ✦</div>
-                    <h2 class="dark-text" style="font-size: 18px; text-align: justify;">${replyText}</h2>
+                    <h2 class="dark-text">${replyText}</h2>
                     <div class="btn-group" style="margin-top: 25px;">
                         <button class="btn btn-main" onclick="showStep3()">دوا پرسیار.. دڵنیایت؟ 🤔</button>
                     </div>
-                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە بۆ لاپەڕەی پێشوو</button>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
                 </div>
             `;
             renderStep(html);
         }
 
-        // قۆناغی ٣: ماڵپەڕی دڵنیایی خۆشویستن
+        // قۆناغی ٣
         function showStep3() {
             const html = `
                 <div class="fade-in">
@@ -223,111 +252,31 @@
                         <button class="btn btn-main" onclick="handleStep3('love')">بەڵێ زۆرم خۆش دەوێییی 🥰</button>
                         <button class="btn btn-outline" onclick="handleStep3('changed')">یان گۆڕاوم... 🥀</button>
                     </div>
-                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە بۆ دەقەکە</button>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
                 </div>
             `;
             renderStep(html);
         }
 
-        // وڵامی کۆتایی
+        // کۆتایی
         function handleStep3(answer) {
-            let replyText = "";
-            if (answer === 'love') {
-                replyText = "خۆشەویستی ئەوەیە کاتێک ناوی دێت، دڵت بلەرزێت؛ کاتێکیش لەبەر چاوان ون دەبێت، تەواوی دنیا چۆڵ و بێدەنگ بێت. فینۆس گیان... ❤️✨";
-            } else {
-                replyText = "گۆڕانی من لەبەر بێوەفایی خۆم نەبوو، بەڵکو وەڵامێک بوو بۆ ئەو هەموو ساردی و بێ‌هەستییەی کە لە بەرامبەر دڵسۆزیمدا بینیم. 🥀💔";
-            }
-
+            let replyText = answer === 'love' ? "خۆشەویستی ئەوەیە کاتێک ناوی دێت، دڵت بلەرزێت؛ کاتێکیش لەبەر چاوان ون دەبێت، تەواوی دنیا چۆڵ و بێدەنگ بێت. فینۆس گیان... ❤️✨" : "گۆڕانی من لەبەر بێوەفایی خۆم نەبوو، بەڵکو وەڵامێک بوو بۆ ئەو هەموو ساردی و بێ‌هەستییەی کە لە بەرامبەر دڵسۆزیمدا بینیم. 🥀💔";
+            
             const html = `
                 <div class="fade-in">
                     <div class="title">کۆتایی نامەکە ✉️</div>
-                    <div class="heart-divider">✦ ✨ ✦</div>
-                    <h2 class="dark-text" style="font-size: 19px;">${replyText}</h2>
-                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە بۆ بژاردەکان</button>
+                    <div class="heart-divider">✦ 🎶 ✦</div>
+                    <h2 class="dark-text">${replyText}</h2>
+                    <button class="btn btn-back" onclick="goBack()">↩️ گەڕانەوە</button>
                 </div>
             `;
             renderStep(html);
         }
 
+        // هەوڵدان بۆ لێدانی مۆسیقا لەگەڵ تەواوبوونی بارکردنی لاپەڕەکە
+        window.addEventListener('click', startMusicAutomatically);
         showStep1();
     </script>
 
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venus 💖</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff0f3; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
-        .card { background-color: white; padding: 40px 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(255, 77, 109, 0.15); text-align: center; max-width: 500px; width: 90%; border: 2px solid #ffccd5; position: relative; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .title { color: #ff4d6d; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
-        .heart-divider { color: #ffb3c1; font-size: 18px; margin-bottom: 20px; }
-        h2 { color: #4a4a4a; font-size: 20px; margin-bottom: 30px; line-height: 1.7; font-weight: 600; }
-        .btn-group { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; width: 100%; }
-        .btn { padding: 12px 25px; font-size: 16px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
-        .btn-main { background-color: #ff4d6d; color: white; }
-        .btn-outline { background-color: #fff; color: #ff4d6d; border: 2px solid #ff4d6d; }
-        .btn-music { background-color: #9b5de5; color: white; margin-top: 15px; }
-        .btn-back { background-color: #f7d6db; color: #ff4d6d; font-size: 14px; padding: 8px 18px; border-radius: 50px; margin-top: 30px; border: none; cursor: pointer; }
-    </style>
-</head>
-<body>
-
-    <div class="card" id="mainCard"></div>
-
-    <!-- گۆرانییەکەی تۆ ئامادە کراوە -->
-    <audio id="bgMusic" loop src="https://files.catbox.moe/k1x475.mp3"></audio>
-
-    <script>
-        let historyStack = [];
-        let isMusicPlaying = false;
-
-        function renderStep(htmlContent, saveToHistory = true) {
-            const card = document.getElementById('mainCard');
-            if (saveToHistory && card.innerHTML.trim() !== "") { historyStack.push(card.innerHTML); }
-            card.innerHTML = htmlContent;
-        }
-
-        function toggleMusic() {
-            const music = document.getElementById('bgMusic');
-            const btn = document.getElementById('musicBtn');
-            if (isMusicPlaying) { music.pause(); btn.innerHTML = "🎵 گۆرانییەکە دابگیرسێنە"; isMusicPlaying = false; }
-            else { music.play(); btn.innerHTML = "⏸️ ڕایبگرە"; isMusicPlaying = true; }
-        }
-
-        function showStep1() {
-            const html = `<div><div class="title">ڤینۆس 💖</div><h2>دایم ئەمەوێ دەست پێشخەری بکەم هەواڵت بزانم بەڵام پاشت گەز ئەبمەوە. بۆچی؟</h2>
-            <div class="btn-group"><button class="btn btn-main" onclick="handleStep1('ihmal')">ئهمالم ئەکەی</button><button class="btn btn-outline" onclick="handleStep1('bahana')">بەهانە ئەدۆزمەوە</button></div></div>`;
-            renderStep(html, false);
-        }
-
-        function handleStep1(answer) {
-            let text = answer === 'ihmal' ? "جوانی، ئایا من کەمتەرخەمم یان تۆ؟" : "بۆچی؟ مەگەر من خراپەم ویستوە؟";
-            renderStep(`<div><h2>${text}</h2><button class="btn btn-main" onclick="showStep2()">بۆچی تاخیر جوابت داوەتەوە؟</button></div>`);
-        }
-
-        function showStep2() {
-            renderStep(`<div><h2>بۆچی هەموو کات تاخیر جوابت داوەتەوەت بە شێوەیەکی سارد قسە ئەکەی؟</h2><div class="btn-group"><button class="btn btn-main" onclick="handleStep2('be_hast')">فینۆس بێ هەست</button><button class="btn btn-outline" onclick="handleStep2('awindar')">ئەویندار</button></div></div>`);
-        }
-
-        function handleStep2(answer) {
-            let text = answer === 'be_hast' ? "ئازار کاتێک قورس دەبێت کە دڵت پڕ بێت لە هەست و قسە، بەڵام بەرامبەرەکەت تەنها بە بێ‌باکی سەیرت بکات." : "سەختترین شت بۆ ئەویندار ئەوەیە کە بە قووڵایی دڵ فیداکاری بکات، بەڵام لە بەرامبەردا تەنها ساردی و بێ‌مەیلی بچنێتەوە.";
-            renderStep(`<div><h2>${text}</h2><button class="btn btn-main" onclick="showStep3()">دوا پرسیار.. دڵنیایت؟</button></div>`);
-        }
-
-        function showStep3() {
-            renderStep(`<div><h2>دڵنیایت لەوەی منت خۆش دەوێ؟</h2><div class="btn-group"><button class="btn btn-main" onclick="handleStep3('love')">بەڵێ زۆرم خۆش دەوێییی</button><button class="btn btn-outline" onclick="handleStep3('changed')">یان گۆڕاوم...</button></div></div>`);
-        }
-
-        function handleStep3(answer) {
-            let text = answer === 'love' ? "خۆشەویستی ئەوەیە کاتێک ناوی دێت، دڵت بلەرزێت.. فینۆس گیان ❤️" : "گۆڕانی من لەبەر بێوەفایی خۆم نەبوو، بەڵکو وەڵامێک بوو بۆ ئەو هەموو ساردی و بێ‌هەستییەی کە لە بەرامبەر دڵسۆزیمدا بینیم.";
-            renderStep(`<div><h2>${text}</h2><button class="btn btn-music" id="musicBtn" onclick="toggleMusic()">🎵 گۆرانییەکە دابگیرسێنە</button></div>`);
-        }
-
-        showStep1();
-    </script>
 </body>
 </html>
